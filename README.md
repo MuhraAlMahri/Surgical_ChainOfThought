@@ -94,6 +94,39 @@ We compare:
 
 ---
 
+## 🚀 Quick Start
+
+### Reproducing an Experiment
+
+Each experiment has its own directory with a README containing detailed reproduction instructions. For example:
+
+```bash
+# Navigate to experiment directory
+cd experiments/exp1_random
+
+# Read the experiment-specific README
+cat README.md
+
+# Run zero-shot evaluation
+python ../scripts/evaluation/evaluate_zeroshot.py \
+    --config configs/exp1_random.yaml \
+    --output results/exp1_zeroshot.json
+
+# Train the model
+python ../scripts/training/train_instruction_finetuning.py \
+    --config configs/exp1_random.yaml
+
+# Evaluate after training
+python ../scripts/evaluation/evaluate_exp1.py \
+    --config configs/exp1_random.yaml \
+    --checkpoint <checkpoint_path> \
+    --output results/instruction_finetuned.json
+```
+
+See each experiment's README for specific instructions.
+
+---
+
 ## 🚀 Installation
 
 ### Prerequisites
@@ -229,24 +262,65 @@ Surgical_ChainOfThought/
 ├── requirements.txt                    # Python dependencies
 ├── LICENSE                             # MIT License
 │
-├── results/
-│   ├── baseline_results.json           # Summary of all model results
-│   ├── eval_epoch*_qwen3vl_kvasir/    # Qwen3-VL detailed results
-│   └── qwen3vl_kvasir_zeroshot_cot_eval.json
-│
-├── corrected_1-5_experiments/
-│   └── qlora_experiments/
+├── experiments/                        # All experiments organized by type
+│   ├── exp1_random/                   # Experiment 1: Random Baseline
+│   │   ├── README.md                  # Reproduction instructions
+│   │   ├── configs/
+│   │   │   └── exp1_random.yaml      # Training configuration
+│   │   └── results/
+│   │       ├── exp1_zeroshot.json    # Zero-shot results
+│   │       └── instruction_finetuned.json  # Fine-tuned results
+│   │
+│   ├── exp2_qwen_reordered/           # Experiment 2: Qwen Reordering
+│   │   ├── README.md
+│   │   ├── configs/
+│   │   └── results/
+│   │
+│   ├── exp3_sequential/               # Experiment 3: CXRTrek Sequential
+│   │   ├── README.md
+│   │   ├── configs/
+│   │   │   ├── exp3_stage1.yaml
+│   │   │   ├── exp3_stage2.yaml
+│   │   │   └── exp3_stage3.yaml
+│   │   └── results/
+│   │
+│   ├── exp4_curriculum/               # Experiment 4: Curriculum Learning
+│   │   ├── README.md
+│   │   ├── configs/
+│   │   └── results/
+│   │
+│   └── exp5_sequential_cot/           # Experiment 5: Sequential CoT
+│       ├── README.md
+│       ├── configs/
 │       └── results/
-│           ├── exp1_*.json             # Exp1 results
-│           ├── exp2_*.json             # Exp2 results
-│           ├── exp3_*.json             # Exp3 results
-│           ├── exp4_*.json             # Exp4 results
-│           ├── exp5_*.json             # Exp5 results
-│           └── *llava_med*.json        # LLaVA-Med results
 │
-└── datasets/
-    ├── Kvasir-VQA/                     # Kvasir dataset
-    └── EndoVis2018/                    # EndoVis dataset
+├── scripts/                            # Reusable scripts
+│   ├── README.md                      # Scripts overview
+│   ├── training/                      # Training scripts
+│   │   ├── train_instruction_finetuning.py
+│   │   └── train_qlora_qwen3vl.py
+│   ├── evaluation/                    # Evaluation scripts
+│   │   ├── evaluate_exp1.py
+│   │   ├── evaluate_exp2.py
+│   │   ├── evaluate_exp3.py
+│   │   ├── evaluate_exp4.py
+│   │   ├── evaluate_exp5.py
+│   │   ├── evaluate_zeroshot.py
+│   │   ├── evaluate_finetuned_llava.py
+│   │   └── metrics_utils.py
+│   └── data_preparation/              # Data preparation scripts
+│       ├── prepare_all_datasets_qlora.py
+│       └── create_stage_splits.py
+│
+├── results/                            # All experimental results
+│   ├── baseline/                      # Baseline model comparisons
+│   │   └── baseline_results.json
+│   ├── llava_med/                     # LLaVA-Med specific results
+│   └── ...                            # Other result files
+│
+└── datasets/                           # Dataset metadata
+    ├── Kvasir-VQA/                    # Kvasir dataset
+    └── EndoVis2018/                   # EndoVis dataset
 ```
 
 ---
