@@ -1,0 +1,148 @@
+================================================================================
+EXP1 TRAINING STARTED - ULTRA-CONDENSED INSTRUCTIONS
+================================================================================
+
+Date: November 10, 2025
+Job ID: 154648
+Status: RUNNING
+
+================================================================================
+WHAT WAS DONE
+================================================================================
+
+1. ✅ Created ultra-condensed instruction templates
+   - General instruction (120 tokens) applied to ALL samples
+   - Minimal category templates (60-120 tokens) per question
+   - Removed metadata lines per advisor feedback
+
+2. ✅ Generated new datasets
+   - Location: datasets/kvasir_ULTRA_CONDENSED/
+   - train_CATEGORY_BASED.jsonl (41,079 samples)
+   - val_CATEGORY_BASED.jsonl (8,786 samples)
+   - test_CATEGORY_BASED.jsonl (8,984 samples)
+
+3. ✅ Updated training configuration
+   - Reduced max_seq_len from 2700 to 1600 (shorter instructions)
+   - Increased LoRA rank from 8 to 16 (more memory available)
+   - Dataset path: kvasir_ULTRA_CONDENSED
+
+4. ✅ Submitted training job
+   - Job ID: 154648
+   - Node: gpu-06
+   - Status: RUNNING
+
+================================================================================
+TRAINING CONFIGURATION
+================================================================================
+
+Dataset Format:
+  • General instruction: ~120 tokens (one-time per sample)
+  • Category instruction: ~60-120 tokens (varies by question)
+  • Image tokens: ~1200 tokens
+  • Total per sample: ~1,400-1,470 tokens
+
+Model Configuration:
+  • Model: Qwen2-VL-7B-Instruct
+  • LoRA rank: 16
+  • LoRA alpha: 32
+  • Vision frozen: Yes
+
+Training Configuration:
+  • Max seq len: 1600
+  • Batch size: 1
+  • Gradient accumulation: 16 (effective batch size = 16)
+  • Learning rate: 5e-6
+  • Epochs: 3
+  • bf16: Yes
+  • Gradient checkpointing: Yes
+
+Memory:
+  • Expected GPU usage: ~25-28GB
+  • GPU memory limit: 40GB
+  • Safety margin: ~30%
+
+================================================================================
+INSTRUCTION FORMAT EXAMPLE
+================================================================================
+
+What the model sees:
+────────────────────────────────────────────────────────────────────────────────
+You are a surgical image analysis assistant analysing an endoscopic image.
+
+Instructions:
+- Select your answer(s) ONLY from the provided candidate list
+- For multi-label questions: Select ALL applicable items, separated by semicolons (;)
+- For single-choice questions: Select EXACTLY one option
+- Output format: item1; item2; item3 (for multi-label) or item1 (for single-choice)
+
+Question: Are there any abnormalities in the image? Check all that are present.
+Candidates: ['barretts', 'bleeding', 'diverticula', 'erosion', 'gastritis', 'hemorrhoids', 'inflammation', 'lesion', 'mass', 'none', 'normal', 'oesophagitis', 'polyp', 'short-segment barretts', 'stricture', 'tumor', 'ulcer', 'ulcerative colitis', 'varices']
+Answer:
+────────────────────────────────────────────────────────────────────────────────
+
+Character count: 725 chars
+Estimated tokens: ~241 tokens
+
+================================================================================
+MONITORING
+================================================================================
+
+Check job status:
+  squeue -u $USER
+
+Monitor training log:
+  tail -f exp1/slurm/logs/train_category_based_154648.out
+
+Check GPU usage:
+  ssh gpu-06
+  nvidia-smi
+
+================================================================================
+LOG FILES
+================================================================================
+
+Standard output: exp1/slurm/logs/train_category_based_154648.out
+Standard error:  exp1/slurm/logs/train_category_based_154648.err
+
+================================================================================
+EXPECTED TIMELINE
+================================================================================
+
+Dataset enrichment: ~5-10 minutes
+Training (3 epochs): ~18-24 hours
+  - 41,079 samples / epoch
+  - ~2,568 steps / epoch
+  - ~7,704 steps total
+
+Checkpoints saved every 500 steps to: exp1/checkpoints/
+
+================================================================================
+COMPARISON WITH PREVIOUS ATTEMPTS
+================================================================================
+
+Previous attempts (OOM errors):
+  • Job 154446: max_seq_len=1024 → Truncation error
+  • Job 154456: max_seq_len=2048 → Truncation error  
+  • Job 154460: max_seq_len=2560 → Truncation error
+  • Job 154461: max_seq_len=2700 → OOM error (44-46GB)
+  • Job 154465: max_seq_len=2700, r=8 → OOM error
+
+Current attempt (should succeed):
+  • Job 154648: max_seq_len=1600, ultra-condensed instructions
+  • Expected memory: 25-28GB (safe margin)
+  • Tokens per sample: ~1,441 vs previous ~2,622
+
+Key difference: Ultra-condensed format saves ~1,200 tokens per sample
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. ⏳ Wait for training to complete (~18-24 hours)
+2. → Check validation accuracy in logs
+3. → If successful, evaluate on test set
+4. → Report results to advisor
+
+================================================================================
+END
+================================================================================

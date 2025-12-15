@@ -1,0 +1,102 @@
+# 8-Stage Clinical CoT Template for Surgical Vision Analysis
+# Hierarchical, question-driven structure for HeiChole pilot demo
+
+system_prompt: "You are an expert surgeon analyzing a surgical image or video frame. Think step-by-step by answering the following questions in sequence. Your reasoning must follow this exact clinical flow."
+
+clinical_reasoning_flow:
+  - stage: "Quality Validation"
+    questions:
+      - "What is the view and perspective of the image? (e.g., laparoscopic, microscopic, egocentric, ultrasound, endoscopic)"
+      - "How is the quality of the image? Is it sufficient for diagnosis? (e.g., clear, blurry, occluded, bloody, well-lit)"
+
+  - stage: "Findings Recognition"
+    questions:
+      - "What anatomical structures are clearly visible in this surgical field?"
+      - "What surgical action or step is being performed at this moment?"
+      - "What is the primary finding or abnormality? (e.g., instrument, tissue, bleed, tumor, normal anatomy)"
+
+  - stage: "Attributes Recognition"
+    questions:
+      - "Where exactly is the finding located? (Describe anatomically with specific landmarks)"
+      - "What are its specific attributes? (e.g., size, shape, color, texture, movement, consistency)"
+      - "What specific instruments are present and what is their function in this context?"
+
+  - stage: "Relationships"
+    questions:
+      - "What does this finding mean in the context of this specific surgical procedure?"
+      - "What is the potential cause or clinical implication of this finding?"
+      - "How do the visible structures relate to each other anatomically?"
+
+  - stage: "Temporal Analysis"
+    questions:
+      - "How has the scene or anatomy changed from a previous step or image? (if temporal context available)"
+    applies_to: ["video"]
+
+  - stage: "Prognosis & Risk"
+    questions:
+      - "What are the potential risks or complications based on this finding?"
+      - "What is the likely immediate next step in the surgical procedure?"
+      - "What are the potential outcomes of this surgical phase?"
+
+  - stage: "Diagnosis/Procedure Advice"
+    questions:
+      - "What is your overall assessment and diagnosis?"
+      - "What specific advice or recommendation would you give to the surgeon?"
+      - "What procedure modifications or considerations are needed?"
+
+  - stage: "Summarizing"
+    questions:
+      - "Write a concise surgical note summarizing your findings and recommendations"
+
+final_instruction: "Based on your sequential reasoning above, provide a concise final summary in the style of a surgical note."
+
+# Few-shot examples for HeiChole dataset
+few_shot_examples:
+  heichole:
+    - question: "What is visible in this laparoscopic cholecystectomy image?"
+      answer: |
+        **Quality Validation:**
+        - View: Laparoscopic view of the abdominal cavity
+        - Quality: Excellent quality with clear visibility, no occlusions. Rating: 5/5.
+        
+        **Findings Recognition:**
+        - Anatomical structures: Liver, gallbladder, and surrounding peritoneal structures clearly visible
+        - Surgical action: Laparoscopic cholecystectomy in progress
+        - Primary finding: Normal gallbladder with mild inflammation
+        
+        **Attributes Recognition:**
+        - Location: Right upper quadrant, specifically the gallbladder fossa
+        - Attributes: Gallbladder appears slightly distended with normal wall thickness
+        - Instruments: Laparoscopic camera and grasping instruments positioned appropriately
+        
+        **Relationships:**
+        - Clinical context: This is a routine laparoscopic cholecystectomy for symptomatic cholelithiasis
+        - Clinical implication: Normal findings suggest standard procedure can continue
+        - Anatomical relationships: Gallbladder properly positioned relative to liver and surrounding structures
+        
+        **Temporal Analysis:**
+        - N/A (single frame analysis)
+        
+        **Prognosis & Risk:**
+        - Risk: Low risk based on normal appearance
+        - Next step: Continue with standard dissection of Calot's triangle
+        - Outcomes: Expected successful completion of procedure
+        
+        **Diagnosis/Procedure Advice:**
+        - Assessment: Normal gallbladder anatomy suitable for standard cholecystectomy
+        - Recommendation: Proceed with standard laparoscopic cholecystectomy technique
+        - Modifications: None required, standard technique appropriate
+        
+        **Summarizing:**
+        Normal gallbladder visualized with appropriate anatomy for laparoscopic cholecystectomy. No contraindications identified. Proceed with standard technique.
+
+# Output format specification
+output_format:
+  structure: "hierarchical_qa"
+  include_ratings: true
+  include_confidence: false
+  max_length_per_question: 150
+  include_surgical_note: true
+
+
+

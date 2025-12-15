@@ -1,0 +1,184 @@
+================================================================================
+✅ EXP1 TRAINING SUCCESSFULLY STARTED!
+================================================================================
+
+Date: November 10, 2025, 12:15 PM
+Job ID: 154658
+Node: gpu-06
+Status: ✅ RUNNING - First training step completed!
+
+================================================================================
+WHAT WORKED
+================================================================================
+
+After multiple attempts to fix memory and truncation issues:
+
+FINAL CONFIGURATION:
+  • Dataset: kvasir_ULTRA_CONDENSED
+  • Instruction format: General (120 tokens) + Minimal (60-120 tokens)
+  • max_seq_len: 2800 (increased to accommodate 2622 tokens needed)
+  • LoRA rank: 8 (reduced to manage memory)
+  • LoRA alpha: 16
+  • Batch size: 1
+  • Gradient accumulation: 16
+  • bf16: Yes
+  • Gradient checkpointing: Yes
+
+TRAINING PROGRESS:
+  • Step 1/7704 completed ✅
+  • Time per step: ~24 seconds (initial estimate, will stabilize)
+  • Estimated total time: ~18-24 hours (will update as training progresses)
+
+================================================================================
+PREVIOUS ATTEMPTS (ALL FAILED)
+================================================================================
+
+Job 154446: max_seq_len=1024, verbose instructions → Truncation error
+Job 154456: max_seq_len=2048, verbose instructions → Truncation error
+Job 154460: max_seq_len=2560, verbose instructions → Truncation error
+Job 154461: max_seq_len=2700, verbose instructions → OOM error (44-46GB)
+Job 154465: max_seq_len=2700, r=8 → OOM error
+Job 154648: max_seq_len=1600, ultra-condensed → Truncation error (1585<1702)
+Job 154650: max_seq_len=2048, ultra-condensed → Truncation error (2033<2622)
+Job 154656: max_seq_len=2048, ultra-condensed → Truncation error (2033<2622)
+Job 154658: max_seq_len=2800, ultra-condensed, r=8 → ✅ SUCCESS!
+
+KEY INSIGHT:
+  The error message "Got ids=[2033] and text=[2622]" meant that the 
+  processor needed 2622 total tokens (instruction + image + answer), but
+  max_seq_len=2048 was truncating it to 2033 tokens.
+  
+  Setting max_seq_len=2800 finally provided enough capacity.
+
+================================================================================
+ULTRA-CONDENSED INSTRUCTION FORMAT
+================================================================================
+
+What the model sees per sample:
+
+────────────────────────────────────────────────────────────────────────────────
+<|im_start|>system
+You are a surgical image analysis assistant analysing an endoscopic image.
+
+Instructions:
+- Select your answer(s) ONLY from the provided candidate list
+- For multi-label questions: Select ALL applicable items, separated by semicolons (;)
+- For single-choice questions: Select EXACTLY one option
+- Output format: item1; item2; item3 (for multi-label) or item1 (for single-choice)
+<|im_end|>
+<|im_start|>user
+<image>
+Question: Are there any abnormalities in the image? Check all that are present.
+Candidates: ['barretts', 'bleeding', ..., 'ulcer', 'varices']
+Answer:<|im_end|>
+<|im_start|>assistant
+<ANS>polyp</ANS><|im_end|>
+────────────────────────────────────────────────────────────────────────────────
+
+Instruction chars: ~725
+Estimated instruction tokens: ~241
+Image tokens: ~1200-1700 (varies per image)
+Chat template tokens: ~100
+Answer tokens: ~20
+Total: ~1561-2061 tokens per sample
+
+With max_seq_len=2800, we now have enough capacity for all samples.
+
+================================================================================
+MONITORING
+================================================================================
+
+Check job status:
+  squeue -u muhra.almahri
+
+Monitor training log in real-time:
+  tail -f exp1/slurm/logs/train_category_based_154658.out
+
+Check GPU usage:
+  ssh gpu-06
+  nvidia-smi
+
+View checkpoints:
+  ls -lht exp1/checkpoints/
+
+================================================================================
+LOG FILES
+================================================================================
+
+Standard output: exp1/slurm/logs/train_category_based_154658.out
+Standard error:  exp1/slurm/logs/train_category_based_154658.err
+
+================================================================================
+EXPECTED TIMELINE
+================================================================================
+
+Training steps: 7,704 total (3 epochs × 2,568 steps/epoch)
+Time per step: ~24 seconds (initial, will stabilize to ~15-20s)
+Estimated time: ~18-24 hours for full training
+
+Checkpoints saved every 500 steps:
+  - Step 500: ~2-3 hours
+  - Step 1000: ~4-5 hours
+  - Step 1500: ~6-7 hours
+  - ...
+  - Step 7500: ~21-23 hours
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. ⏳ Wait for training to complete (~18-24 hours)
+2. → Monitor validation accuracy in logs (check every few hours)
+3. → If successful, evaluate best checkpoint on test set
+4. → Compare results with baseline
+5. → Report to advisor
+
+================================================================================
+MEMORY USAGE ESTIMATE
+================================================================================
+
+With current configuration:
+  • max_seq_len: 2800 tokens
+  • LoRA rank: 8
+  • Batch size: 1
+  • bf16: Yes
+  • Gradient checkpointing: Yes
+
+Expected GPU memory: ~32-36GB (fits comfortably in 40GB)
+
+================================================================================
+DATASET INFORMATION
+================================================================================
+
+Location: corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/
+
+Files:
+  • train_CATEGORY_BASED.json (41,079 samples)
+  • val_CATEGORY_BASED.json (8,786 samples)
+  • test_CATEGORY_BASED.json (8,984 samples)
+
+Total samples: 58,849
+
+Categories: 20 (all with advisor-approved instruction templates)
+
+Format:
+  • General instruction applied to ALL samples
+  • Minimal category templates (no verbose text)
+  • Explicit candidate lists for all close-ended questions
+  • Clear multi-label vs single-choice distinction
+  • Semicolon-separated output format
+
+================================================================================
+SUCCESS FACTORS
+================================================================================
+
+1. ✅ Ultra-condensed instruction format (saves ~1,200 tokens vs verbose)
+2. ✅ Increased max_seq_len to 2800 (enough for 2622 tokens needed)
+3. ✅ Reduced LoRA rank to 8 (saves GPU memory)
+4. ✅ Gradient checkpointing enabled (saves memory)
+5. ✅ bf16 precision (saves memory and speeds up training)
+6. ✅ Batch size 1 with grad_accum 16 (manages memory while maintaining effective batch size)
+
+================================================================================
+END
+================================================================================

@@ -1,0 +1,95 @@
+{
+  "best_global_step": 15,
+  "best_metric": 1.9408745765686035,
+  "best_model_checkpoint": "/l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/qlora_experiments/models/exp3_cxrtrek/stage3/checkpoint-15",
+  "epoch": 5.0,
+  "eval_steps": 3,
+  "global_step": 15,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "epoch": 1.0,
+      "eval_loss": 2.3579790592193604,
+      "eval_runtime": 2.5922,
+      "eval_samples_per_second": 4.244,
+      "eval_steps_per_second": 4.244,
+      "step": 3
+    },
+    {
+      "epoch": 1.744186046511628,
+      "grad_norm": 2.573265314102173,
+      "learning_rate": 3.928571428571429e-05,
+      "loss": 2.6621,
+      "step": 5
+    },
+    {
+      "epoch": 2.0,
+      "eval_loss": 2.2152719497680664,
+      "eval_runtime": 2.5845,
+      "eval_samples_per_second": 4.256,
+      "eval_steps_per_second": 4.256,
+      "step": 6
+    },
+    {
+      "epoch": 3.0,
+      "eval_loss": 2.073309898376465,
+      "eval_runtime": 2.6225,
+      "eval_samples_per_second": 4.194,
+      "eval_steps_per_second": 4.194,
+      "step": 9
+    },
+    {
+      "epoch": 3.3720930232558137,
+      "grad_norm": 3.7847282886505127,
+      "learning_rate": 2.1428571428571428e-05,
+      "loss": 2.8026,
+      "step": 10
+    },
+    {
+      "epoch": 4.0,
+      "eval_loss": 1.9748400449752808,
+      "eval_runtime": 2.6062,
+      "eval_samples_per_second": 4.221,
+      "eval_steps_per_second": 4.221,
+      "step": 12
+    },
+    {
+      "epoch": 5.0,
+      "grad_norm": 4.506197452545166,
+      "learning_rate": 3.5714285714285714e-06,
+      "loss": 2.3789,
+      "step": 15
+    },
+    {
+      "epoch": 5.0,
+      "eval_loss": 1.9408745765686035,
+      "eval_runtime": 2.6074,
+      "eval_samples_per_second": 4.219,
+      "eval_steps_per_second": 4.219,
+      "step": 15
+    }
+  ],
+  "logging_steps": 5,
+  "max_steps": 15,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 5,
+  "save_steps": 3,
+  "stateful_callbacks": {
+    "TrainerControl": {
+      "args": {
+        "should_epoch_stop": false,
+        "should_evaluate": false,
+        "should_log": false,
+        "should_save": true,
+        "should_training_stop": true
+      },
+      "attributes": {}
+    }
+  },
+  "total_flos": 8156889092473920.0,
+  "train_batch_size": 1,
+  "trial_name": null,
+  "trial_params": null
+}

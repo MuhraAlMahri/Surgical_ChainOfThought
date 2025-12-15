@@ -1,0 +1,42 @@
+# Experiment 1: Random Baseline for EndoVis2018 (QLoRA, 5 epochs)
+# Same configuration as Kvasir-VQA Exp1 for fair comparison
+
+experiment_name: "EndoVis2018 - Exp1 Random Baseline"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/endovis2018_experiments/models/exp1_random
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]  # Attention layers only
+
+train:
+  seed: 42
+  max_seq_len: 3072
+  train_bs: 4  # OPTIMIZED: Increased from 1 for faster training
+  grad_accum: 4  # OPTIMIZED: Reduced to maintain effective batch size = 16
+  eval_bs: 4
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: false  # OPTIMIZED: Disabled for 2x speedup
+  dataloader_num_workers: 16  # OPTIMIZED: Increased from 4 for parallel I/O
+  logging_steps: 50
+  save_steps: 125  # OPTIMIZED: Reduced for faster checkpoints (~1 epoch)
+  eval_steps: 125
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa/validation.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/EndoVis2018/raw/images
+
+# Expected training time: ~20 hours on 1 GPU
+# Trainable params: ~2.5M (r=4, 4 modules)
+# Batch padding: Dynamic per-batch (implemented in collate_fn)
+
+

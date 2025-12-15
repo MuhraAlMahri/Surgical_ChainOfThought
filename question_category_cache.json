@@ -1,0 +1,122 @@
+{
+  "Are there any abnormalities in the image? Check all that are present._None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: AbnormalityDetection"
+  },
+  "Are there any anatomical landmarks in the image? Check all that are present._None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "Are there any instruments in the image? Check all that are present._None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "Have all polyps been removed?_None_kvasir": {
+    "stage": 3,
+    "category": "treatment",
+    "confidence": "high",
+    "raw_response": "Stage 3: Treatment/ClinicalContext"
+  },
+  "Is this finding easy to detect?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "Is there a green/black box artefact?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "Is there text?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "What type of polyp is present?_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "What type of procedure is the image taken from?_None_kvasir": {
+    "stage": 3,
+    "category": "treatment",
+    "confidence": "high",
+    "raw_response": "Stage 3: Treatment/Clinical Context"
+  },
+  "What is the size of the polyp?_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "How many findings are present?_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "How many polyps are in the image?_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "Where in the image is the instrument?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "Where in the image is the abnormality?_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "Where in the image is the anatomical landmark?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "How many instrumnets are in the image?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: Abnormality/Instrument Detection"
+  },
+  "What color is the abnormality? If more than one separate with ;_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "What color is the anatomical landmark? If more than one separate with ;_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 2: Characteristics"
+  },
+  "Does this image contain any finding?_None_kvasir": {
+    "stage": 1,
+    "category": "abnormality_detection",
+    "confidence": "high",
+    "raw_response": "Stage 1: AbnormalityDetection"
+  },
+  "none_None_kvasir": {
+    "stage": 2,
+    "category": "characteristics",
+    "confidence": "high",
+    "raw_response": "Stage 0: CategoryName"
+  }
+}

@@ -1,0 +1,45 @@
+# Experiment 5: Sequential Chain-of-Thought (QLoRA, 5 epochs)
+experiment_name: "EndoVis2018 - Exp5 Sequential Chain-of-Thought"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/endovis2018_experiments/models/exp5_sequential_cot
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]  # Attention only, NO MLP
+
+train:
+  seed: 42
+  max_seq_len: 3072  # Full resolution support
+  train_bs: 4  # OPTIMIZED: Increased from 1 for faster training
+  grad_accum: 4  # OPTIMIZED: Reduced to maintain effective batch size = 16
+  eval_bs: 4
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: false  # OPTIMIZED: Disabled for 2x speedup
+  dataloader_num_workers: 16  # OPTIMIZED: Increased from 4 for parallel I/O
+  logging_steps: 50
+  save_steps: 125  # OPTIMIZED: Reduced for faster checkpoints (~1 epoch)
+  eval_steps: 125
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa_reordered/exp5_sequential_cot/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa_reordered/exp5_sequential_cot/validation.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/EndoVis2018/raw/images
+
+# Expected training time: ~20 hours on 1 GPU
+# Trainable params: ~2.5M (r=4, 4 modules)
+# Uses Qwen-reordered dataset (clinically ordered: Stage1 → Stage2 → Stage3)
+# This model will be used for sequential CoT inference during evaluation
+
+
+
+
+
+

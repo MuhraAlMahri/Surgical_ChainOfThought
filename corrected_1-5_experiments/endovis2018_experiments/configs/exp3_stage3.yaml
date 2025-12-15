@@ -1,0 +1,50 @@
+# Experiment 3: Sequential (CXRTrek-style) - Stage 3 (QLoRA, 5 epochs)
+# Model 3: Trained ONLY on Stage 3 questions
+# NOTE: EndoVis2018 has NO Stage 3 questions (no clinical diagnosis questions)
+# This config exists for consistency but will have 0 training samples
+experiment_name: "EndoVis2018 - Exp3 Sequential Stage 3 (Clinical Context)"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/endovis2018_experiments/models/exp3_sequential/stage3
+
+# NO prev_checkpoint - separate model
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+train:
+  seed: 42
+  max_seq_len: 3072
+  train_bs: 4  # OPTIMIZED: Increased from 1 for faster training
+  grad_accum: 4  # OPTIMIZED: Reduced to maintain effective batch size = 16
+  eval_bs: 4
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: false  # OPTIMIZED: Disabled for 2x speedup
+  dataloader_num_workers: 16  # OPTIMIZED: Increased from 4 for parallel I/O
+  logging_steps: 5
+  save_steps: 1  # Will have 0 samples, so minimal steps
+  eval_steps: 1
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa_reordered/exp4_curriculum/stage3/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa_reordered/exp4_curriculum/stage3/validation.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/EndoVis2018/raw/images
+
+# Expected training time: N/A (0 samples)
+# Stage 3: 0 training samples (EndoVis2018 has no clinical diagnosis questions)
+# EndoVis2018 only has: PROCEDURE_TYPE, INSTRUMENT_DETECTION, ANATOMY_DETECTION, INSTRUMENT_COUNT
+# None of these are clinical diagnosis/treatment questions
+
+
+
+
+
+

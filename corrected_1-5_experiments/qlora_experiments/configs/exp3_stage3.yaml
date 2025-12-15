@@ -1,0 +1,37 @@
+# Experiment 3: CXRTrek Sequential - Stage 3 (QLoRA, 5 epochs)
+experiment_name: "Exp3 - CXRTrek Stage 3 (Clinical Context)"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/qlora_experiments/models/exp3_cxrtrek/stage3
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+train:
+  seed: 42
+  max_seq_len: 3072
+  train_bs: 1
+  grad_accum: 16
+  eval_bs: 1
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 5
+  save_steps: 3  # ~1 epoch (43 samples / 16 = 3 steps)
+  eval_steps: 3
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/qlora_experiments/exp3_cxrtrek_sequential/stage3/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/qlora_experiments/exp3_cxrtrek_sequential/stage3/val.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+
+# Expected training time: ~30 minutes on 1 GPU
+# Stage 3: 43 training samples (Clinical Context questions - very small)
+

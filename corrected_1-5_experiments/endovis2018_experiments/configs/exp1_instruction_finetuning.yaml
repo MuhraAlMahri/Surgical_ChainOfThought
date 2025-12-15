@@ -1,0 +1,53 @@
+# Instruction Fine-tuning for Exp1 (Random Baseline)
+# Uses R1 split (1560 train frames, 228 val frames) with instruction templates
+# Matches Kvasir-VQA Exp1 configuration exactly
+
+experiment_name: "EndoVis2018 - Exp1 Instruction Fine-tuning (R1 Split)"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/endovis2018_experiments/models/exp1_random_instruction_r1
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]  # Attention layers only
+
+train:
+  seed: 42
+  max_seq_len: 3072
+  train_bs: 1  # Matches Kvasir-VQA: batch size 1
+  grad_accum: 16  # Matches Kvasir-VQA: effective batch size = 16
+  eval_bs: 1
+  lr: 5.0e-5  # Matches Kvasir-VQA
+  weight_decay: 0.01
+  epochs: 5  # Matches Kvasir-VQA
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  dataloader_num_workers: 16
+  logging_steps: 50
+  save_steps: 125
+  eval_steps: 125
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis18_surgery_r1_split/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis18_surgery_r1_split/val.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/EndoVis2018/raw/images
+  instruction_template: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa/INSTRUCTIONS_PER_CATEGORY.txt
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# - Using R1 split: 1560 train frames (6240 samples), 228 val frames (912 samples)
+# - Configuration matches Kvasir-VQA Exp1 exactly:
+#   - train_bs: 1, grad_accum: 16 (effective batch = 16)
+#   - lr: 5.0e-5, epochs: 5
+#   - max_seq_len: 3072
+#   - LoRA: r=4, alpha=8, attention layers only
+# ============================================================================
+
+
+
+

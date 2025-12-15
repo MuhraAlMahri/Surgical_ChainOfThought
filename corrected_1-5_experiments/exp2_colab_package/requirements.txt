@@ -1,0 +1,31 @@
+# Requirements for Exp2 Evaluation in Google Colab
+# Install with: !pip install -r requirements.txt
+
+# Core Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.37.0
+accelerate>=0.26.0
+
+# Model Fine-tuning
+peft>=0.8.0
+
+# Qwen-VL Specific
+qwen-vl-utils>=0.0.2
+
+# Image Processing
+Pillow>=10.0.0
+
+# Utilities
+tqdm>=4.65.0
+
+# HuggingFace Hub (for downloading models)
+huggingface-hub>=0.19.0
+
+
+
+
+
+
+
+

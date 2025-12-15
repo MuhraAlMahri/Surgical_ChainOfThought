@@ -1,0 +1,42 @@
+# Instruction Fine-tuning for EndoVis2018 using Surgery R1 Split
+# Uses instruction templates from INSTRUCTIONS_PER_CATEGORY.txt
+
+experiment_name: "EndoVis2018 - Instruction Fine-tuning (Surgery R1 Split)"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/endovis2018_experiments/models/instruction_finetuning
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]  # Attention layers only
+
+train:
+  seed: 42
+  max_seq_len: 3072
+  train_bs: 2  # REDUCED: From 4 to 2 to avoid OOM (GPU 0 was at 27.29GB)
+  grad_accum: 8  # INCREASED: To maintain effective batch size = 16 (2 * 8)
+  eval_bs: 2
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true  # ENABLED: To save memory (trades speed for memory)
+  dataloader_num_workers: 16  # OPTIMIZED: Increased from 4 for parallel I/O
+  logging_steps: 50
+  save_steps: 125  # OPTIMIZED: Reduced for faster checkpoints (~1 epoch)
+  eval_steps: 125
+
+data:
+  train_json: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis18_surgery_r1_split/train.json
+  val_json: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis18_surgery_r1_split/val.json
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/EndoVis2018/raw/images
+  instruction_template: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/endovis2018_vqa/INSTRUCTIONS_PER_CATEGORY.txt
+
+# Expected training time: ~1-2 hours on 1 GPU (with optimizations)
+# Uses Surgery R1 split (different from main experiments)
+# Applies instruction templates for better format guidance
+

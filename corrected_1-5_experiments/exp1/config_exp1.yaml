@@ -1,7 +1,7 @@
 # Experiment 1: Random Baseline Configuration
 # Minimal config for reproducing Exp1 training
 
-model_name: Qwen/Qwen2-VL-7B-Instruct
+model_name: Qwen/Qwen2-VL-7B-Instruct  # Updated from Qwen2-VL-7B
 
 vision_frozen: true
 

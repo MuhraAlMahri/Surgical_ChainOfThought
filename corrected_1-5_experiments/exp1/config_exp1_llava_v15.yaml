@@ -1,0 +1,52 @@
+# Experiment 1: Instruction Fine-tuning with LLaVA v1.5 (Standard, not Med)
+# Kvasir-VQA Baseline using standard LLaVA v1.5 model
+# Standard LLaVA models have better processor support than LLaVA-Med
+
+experiment_name: "Kvasir-VQA - Exp1 Instruction Fine-tuning (LLaVA v1.5)"
+
+model_name: liuhaotian/llava-v1.5-7b
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/exp1/models/exp1_llava_v15_instruction
+
+lora:
+  r: 8  # Similar to MedGemma-4B (7B model)
+  alpha: 16  # Keep 2x ratio
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]  # All linear layers
+
+train:
+  seed: 42
+  max_seq_len: 2048  # LLaVA typically uses 2048 max length
+  train_bs: 2  # Can use larger batch with 7B model
+  grad_accum: 8  # Effective batch size = 16 (2 * 8)
+  eval_bs: 2
+  lr: 5.0e-5  # Same as Qwen3-VL config
+  weight_decay: 0.01
+  epochs: 5  # Same as Qwen3-VL config
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  dataloader_num_workers: 16
+  logging_steps: 50
+  save_steps: 125
+  eval_steps: 125
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/train_CATEGORY_BASED.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/val_CATEGORY_BASED.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+  instruction_template: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/INSTRUCTIONS_PER_CATEGORY.txt
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# - Using standard LLaVA v1.5 (liuhaotian/llava-v1.5-7b) instead of LLaVA-Med
+# - Standard LLaVA has better processor support and should work without issues
+# - 7B model allows for:
+#   - Larger batch size (2 vs 1)
+#   - Higher LoRA rank (8 vs 4)
+#   - Same effective batch size (16)
+# - Max sequence length: 2048
+# - Same training schedule as Qwen3-VL Exp1 (5 epochs, lr=5e-5)
+# ============================================================================
+

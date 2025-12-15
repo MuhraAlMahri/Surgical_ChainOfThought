@@ -1,0 +1,24 @@
+{
+  "kvasir": {
+    "Are there any abnormalities in the image? Check all that are present.": "abnormality_detection",
+    "Are there any anatomical landmarks in the image? Check all that are present.": "abnormality_detection",
+    "Are there any instruments in the image? Check all that are present.": "abnormality_detection",
+    "Have all polyps been removed?": "treatment",
+    "Is this finding easy to detect?": "abnormality_detection",
+    "Is there a green/black box artefact?": "abnormality_detection",
+    "Is there text?": "abnormality_detection",
+    "What type of polyp is present?": "characteristics",
+    "What type of procedure is the image taken from?": "treatment",
+    "What is the size of the polyp?": "characteristics",
+    "How many findings are present?": "characteristics",
+    "How many polyps are in the image?": "characteristics",
+    "Where in the image is the instrument?": "abnormality_detection",
+    "Where in the image is the abnormality?": "characteristics",
+    "Where in the image is the anatomical landmark?": "abnormality_detection",
+    "How many instrumnets are in the image?": "abnormality_detection",
+    "What color is the abnormality? If more than one separate with ;": "characteristics",
+    "What color is the anatomical landmark? If more than one separate with ;": "characteristics",
+    "Does this image contain any finding?": "abnormality_detection",
+    "none": "characteristics"
+  }
+}

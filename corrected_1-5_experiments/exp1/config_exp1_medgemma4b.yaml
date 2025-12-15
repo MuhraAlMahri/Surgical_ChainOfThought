@@ -1,0 +1,59 @@
+# Experiment 1: Instruction Fine-tuning with MedGemma-4B
+# Kvasir-VQA Baseline using MedGemma-4B model
+# Matches Exp1 configuration but adapted for MedGemma-4B
+
+experiment_name: "Kvasir-VQA - Exp1 Instruction Fine-tuning (MedGemma-4B)"
+
+model_name: google/medgemma-4b-it
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/exp1/models/exp1_medgemma4b_instruction
+
+lora:
+  r: 8  # Can use higher rank with smaller model (4B vs 8B)
+  alpha: 16  # Keep 2x ratio
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]  # All linear layers
+
+train:
+  seed: 42
+  max_seq_len: 2048  # MedGemma typically uses 2048 max length
+  train_bs: 2  # Can use larger batch with smaller model
+  grad_accum: 8  # Effective batch size = 16 (2 * 8)
+  eval_bs: 2
+  lr: 5.0e-5  # Same as Qwen3-VL config
+  weight_decay: 0.01
+  epochs: 5  # Same as Qwen3-VL config
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  dataloader_num_workers: 16
+  logging_steps: 50
+  save_steps: 125
+  eval_steps: 125
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/train_CATEGORY_BASED.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/val_CATEGORY_BASED.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+  instruction_template: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/kvasir_ULTRA_CONDENSED/INSTRUCTIONS_PER_CATEGORY.txt
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# - Using MedGemma-4B (google/medgemma-4b-it) instead of Qwen3-VL-8B
+# - Smaller model allows for:
+#   - Larger batch size (2 vs 1)
+#   - Higher LoRA rank (8 vs 4)
+#   - Same effective batch size (16)
+# - Image resolution: MedGemma expects 896x896 (may need preprocessing)
+# - Max sequence length: 2048 (MedGemma default)
+# - Same training schedule as Qwen3-VL Exp1 (5 epochs, lr=5e-5)
+# ============================================================================
+
+
+
+
+
+
+
+

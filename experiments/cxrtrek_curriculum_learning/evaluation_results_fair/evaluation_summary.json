@@ -1,0 +1,22 @@
+{
+  "test_set_info": {
+    "total_test_samples": 1300,
+    "evaluated_samples": 500,
+    "test_size": 0.2,
+    "random_seed": 42
+  },
+  "simple_model": {
+    "success_rate": 0.584,
+    "total_samples": 500,
+    "correct_predictions": 292
+  },
+  "surgical_model": {
+    "success_rate": 0.368,
+    "total_samples": 500,
+    "correct_predictions": 184
+  },
+  "comparison": {
+    "success_rate_difference": -0.21599999999999997,
+    "improvement": false
+  }
+}

@@ -1,0 +1,38 @@
+# Experiment 2: Qwen Clinical Reordering (QLoRA, 5 epochs)
+experiment_name: "Exp2 - Qwen Clinical Reordering"
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+output_dir: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/qlora_experiments/models/exp2_qwen_reordered
+
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]  # Attention only, NO MLP
+
+train:
+  seed: 42
+  max_seq_len: 3072  # Full resolution support
+  train_bs: 1
+  grad_accum: 16  # Effective batch = 16
+  eval_bs: 1
+  lr: 5.0e-5
+  weight_decay: 0.01
+  epochs: 5
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 50
+  save_steps: 2570  # ~1 epoch
+  eval_steps: 2570
+
+data:
+  train_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/qlora_experiments/exp2_qwen_reordered/train.jsonl
+  val_jsonl: /l/users/muhra.almahri/Surgical_COT/corrected_1-5_experiments/datasets/qlora_experiments/exp2_qwen_reordered/val.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+
+# Expected training time: ~20 hours on 1 GPU
+# Trainable params: ~2.5M (r=4, 4 modules)
+# Data is clinically ordered: Stage1 (35%) → Stage2 (64%) → Stage3 (0.1%)
+

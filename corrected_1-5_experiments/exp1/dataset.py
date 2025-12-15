@@ -1,18 +1,61 @@
 import json
 import torch
 from torch.utils.data import Dataset
-from PIL import Image
+from PIL import Image, ImageOps
 from pathlib import Path
 from transformers import AutoProcessor
 from templates import build_conversation
 
 
+def letterbox_to_square(img, target_size=768):
+    """
+    Resize image preserving aspect ratio (letterbox), then pad to square.
+    This avoids distortion of medical image features.
+    
+    Args:
+        img: PIL Image
+        target_size: Target square size (default 768x768)
+    
+    Returns:
+        PIL Image of size (target_size, target_size)
+    """
+    w, h = img.size
+    scale = target_size / max(w, h)
+    new_w, new_h = int(w * scale), int(h * scale)
+    
+    # Resize with BICUBIC for high quality
+    img = img.resize((new_w, new_h), Image.BICUBIC)
+    
+    # Calculate padding to make square
+    pad_w = target_size - new_w
+    pad_h = target_size - new_h
+    padding = (pad_w // 2, pad_h // 2, pad_w - pad_w // 2, pad_h - pad_h // 2)  # L, T, R, B
+    
+    # Pad with black (0) to target_size x target_size
+    return ImageOps.expand(img, border=padding, fill=0)
+
+
 class VQASFTDataset(Dataset):
-    def __init__(self, jsonl_path, image_root, model_name, max_len=512):
+    def __init__(self, jsonl_path, image_root, model_name, max_len=512, 
+                 use_letterbox=False, target_size=768):
         self.samples = [json.loads(l) for l in open(jsonl_path)]
         self.image_root = Path(image_root)
         self.processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
         self.max_len = max_len
+        self.use_letterbox = use_letterbox
+        self.target_size = target_size
+        
+        # If using letterbox, set fixed resolution for processor
+        if use_letterbox:
+            # Set processor to handle fixed resolution
+            target_pixels = target_size * target_size
+            if hasattr(self.processor, 'image_processor'):
+                self.processor.image_processor.min_pixels = target_pixels
+                self.processor.image_processor.max_pixels = target_pixels
+                print(f"✓ Letterbox mode enabled: {target_size}×{target_size} (preserves aspect ratio)")
+        else:
+            # Keep default adaptive resolution
+            print(f"✓ Using adaptive resolution (default Qwen2-VL behavior)")
         
         # Ensure right padding for training
         if hasattr(self.processor, 'tokenizer'):
@@ -33,23 +76,54 @@ class VQASFTDataset(Dataset):
         img_path = self.image_root / img_file
         img = Image.open(str(img_path).replace("//", "/")).convert("RGB")
         
-        # Build LLaVA-style conversation with sentinels
-        conversation = build_conversation(
-            ex["question_type"],
-            ex["question"],
-            ex.get("answer_candidates"),
-            answer=ex["answer"],  # Include ground truth with <ANS> sentinels
-            for_training=True
-        )
+        # Apply letterbox if enabled (preserves aspect ratio, no warping)
+        if self.use_letterbox:
+            img = letterbox_to_square(img, target_size=self.target_size)
         
-        # Apply chat template (renders system/user/assistant turns)
-        full_text = self.processor.apply_chat_template(
-            conversation,
-            tokenize=False,
-            add_generation_prompt=False  # We already have assistant response
-        )
+        # Check if 'instruction' field exists (CATEGORY_BASED dataset)
+        if 'instruction' in ex and ex['instruction']:
+            # Use pre-built instruction with <ANS> sentinels for training
+            instruction_text = ex['instruction']
+            answer_text = ex['answer']
+            
+            # Build conversation with image placeholder
+            conversation = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image"},
+                        {"type": "text", "text": instruction_text}
+                    ]
+                },
+                {
+                    "role": "assistant",
+                    "content": f"<ANS>{answer_text}</ANS>"
+                }
+            ]
+            
+            # Apply chat template
+            full_text = self.processor.apply_chat_template(
+                conversation,
+                tokenize=False,
+                add_generation_prompt=False
+            )
+        else:
+            # Fall back to old method for legacy datasets
+            conversation = build_conversation(
+                ex["question_type"],
+                ex["question"],
+                ex.get("answer_candidates"),
+                answer=ex["answer"],  # Include ground truth with <ANS> sentinels
+                for_training=True
+            )
+            
+            # Apply chat template (renders system/user/assistant turns)
+            full_text = self.processor.apply_chat_template(
+                conversation,
+                tokenize=False,
+                add_generation_prompt=False  # We already have assistant response
+            )
         
-        # Single-pass processing with image and full text (including answer)
         enc = self.processor(
             text=[full_text],
             images=[img],
@@ -59,11 +133,11 @@ class VQASFTDataset(Dataset):
             truncation=True
         )
         
-        # Extract tensors
-        input_ids = enc["input_ids"][0]
-        attention_mask = enc["attention_mask"][0]
-        pixel_values = enc.get("pixel_values", [None])[0]
-        image_grid_thw = enc.get("image_grid_thw")
+        # Extract tensors (remove batch dimension added by processor)
+        input_ids = enc["input_ids"].squeeze(0)  # [batch, seq] -> [seq]
+        attention_mask = enc["attention_mask"].squeeze(0)
+        pixel_values = enc.get("pixel_values")  # Keep as is for vision processing
+        image_grid_thw = enc.get("image_grid_thw")  # Keep as is
         
         # SENTINEL-BASED LABEL MASKING
         # Tokenize sentinels to find their IDs
@@ -112,28 +186,58 @@ class VQASFTDataset(Dataset):
         }
         
         # Add vision-related tensors if available
+        # These should maintain their processor-generated shapes
         if pixel_values is not None:
-            result["pixel_values"] = pixel_values
+            # Remove batch dimension: [1, C, H, W] -> [C, H, W]
+            result["pixel_values"] = pixel_values.squeeze(0) if len(pixel_values.shape) == 4 else pixel_values
         if image_grid_thw is not None:
-            if len(image_grid_thw.shape) > 1:
-                result["image_grid_thw"] = image_grid_thw[0]
-            else:
-                result["image_grid_thw"] = image_grid_thw
+            # Remove batch dimension but keep image dimension: [1, num_imgs, 3] -> [num_imgs, 3]
+            result["image_grid_thw"] = image_grid_thw.squeeze(0) if len(image_grid_thw.shape) > 2 else image_grid_thw
         
         return result
 
 
 def collate(batch):
-    """Collate function for batching."""
+    """Collate function for Qwen2-VL vision-language model."""
     keys = batch[0].keys()
     out = {}
     
     for k in keys:
-        if k == "image_grid_thw":
-            # Stack grid_thw carefully
-            if all(k in b for b in batch):
-                out[k] = torch.stack([b[k] for b in batch])
+        items = [b[k] for b in batch]
+        
+        if not isinstance(items[0], torch.Tensor):
+            out[k] = items
+            continue
+        
+        if k == "pixel_values":
+            # For pixel_values, just stack along batch dimension
+            # Input: list of [C, H, W] -> Output: [batch, C, H, W]
+            out[k] = torch.stack(items)
+            
+        elif k == "image_grid_thw":
+            # For image_grid_thw, stack and then reshape to [batch*num_images, 3]
+            # Input: list of [num_images, 3] -> Stack to [batch, num_images, 3] -> Reshape to [batch*num_images, 3]
+            stacked = torch.stack(items)  # [batch, num_images, 3]
+            out[k] = stacked.view(-1, 3)  # [batch*num_images, 3]
+            
+        elif k in ["input_ids", "attention_mask", "labels"]:
+            # For sequences, pad to same length if needed
+            max_len = max(item.size(0) for item in items)
+            pad_value = -100 if k == "labels" else 0
+            
+            padded = []
+            for item in items:
+                if item.size(0) < max_len:
+                    padding = torch.full((max_len - item.size(0),), pad_value, dtype=item.dtype)
+                    padded.append(torch.cat([item, padding]))
+                else:
+                    padded.append(item)
+            out[k] = torch.stack(padded)
         else:
-            out[k] = torch.stack([b[k] for b in batch])
+            # For other tensors, try simple stacking
+            try:
+                out[k] = torch.stack(items)
+            except:
+                out[k] = items
     
     return out

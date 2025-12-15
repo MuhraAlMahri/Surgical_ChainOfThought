@@ -1,0 +1,54 @@
+# Experiment 1: Qwen3-VL with 2 GPUs
+# Full resolution training with distributed data parallel
+
+model_name: Qwen/Qwen3-VL-8B-Instruct
+
+vision_frozen: true
+
+lora:
+  r: 8  # Good balance for 8B model
+  alpha: 16
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+train:
+  seed: 42
+  max_seq_len: 2900  # Full resolution
+  train_bs: 1  # Per-device batch size (2 GPUs × 1 = 2 total)
+  grad_accum: 8  # Effective batch = 2×1×8 = 16
+  eval_bs: 1
+  lr: 5.0e-6
+  weight_decay: 0.0
+  epochs: 3
+  warmup_ratio: 0.0
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_steps: 2000
+  eval_steps: 2000
+
+data:
+  train_jsonl: datasets/kvasir_ULTRA_CONDENSED/train_CATEGORY_BASED.jsonl
+  val_jsonl: datasets/kvasir_ULTRA_CONDENSED/val_CATEGORY_BASED.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+  use_vision_cache: false
+
+eval:
+  numeric_rel_tol: 0.05
+  numeric_abs_tol: 0.0
+
+# ============================================================================
+# 2-GPU NOTES
+# ============================================================================
+# - Using 2 GPUs with DistributedDataParallel (DDP)
+# - Total memory: 80GB (fits Qwen3-VL-8B easily!)
+# - Effective batch size: 2 GPUs × 1 per-device × 8 grad_accum = 16 (same as single GPU)
+# - Expected speedup: ~1.7-1.9x faster than single GPU
+# - Estimated time: 50h ÷ 1.8 = ~28 hours
+# ============================================================================
+
+
+
+
+
+

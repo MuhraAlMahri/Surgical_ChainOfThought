@@ -1,0 +1,59 @@
+# Experiment 1: 768x768 Letterbox Configuration - 2 GPU
+# Uses aspect-ratio preserving resize + padding (no warping)
+# Expected training time: ~13-15 hours on 2 GPUs (1.7-1.8x speedup)
+
+model_name: Qwen/Qwen2-VL-7B-Instruct
+
+vision_frozen: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+train:
+  seed: 42
+  max_seq_len: 1800       # Increased for 768x768
+  train_bs: 4             # Per GPU: 4 samples × 2 GPUs = 8 total per step
+  grad_accum: 8           # Reduced from 16 (effective batch = 4×2×8 = 64)
+  eval_bs: 4
+  lr: 1.0e-4
+  weight_decay: 0.0
+  epochs: 1
+  warmup_ratio: 0.05
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_steps: 500
+
+data:
+  train_jsonl: datasets/kvasir_raw_6500_image_level_70_15_15/train.jsonl
+  val_jsonl: datasets/kvasir_raw_6500_image_level_70_15_15/val.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+  
+  # Letterbox settings (aspect-ratio preserving)
+  use_letterbox: true
+  target_size: 768         # 768x768 resolution
+
+eval:
+  numeric_rel_tol: 0.05
+  numeric_abs_tol: 0.0
+
+# ============================================================================
+# PERFORMANCE EXPECTATIONS (2 GPU distributed training)
+# ============================================================================
+# Resolution: 768×768 (letterbox, no warping)
+# GPUs: 2 × A100 (or similar)
+# Training time: ~13-15 hours (1.7-1.8x speedup vs 1 GPU)
+# Per-GPU batch: 4 samples
+# Total batch per step: 8 samples (4 × 2 GPUs)
+# Effective batch: 64 (with grad_accum=8)
+# Memory per GPU: ~40-50 GB
+# ============================================================================
+
+
+
+
+
+

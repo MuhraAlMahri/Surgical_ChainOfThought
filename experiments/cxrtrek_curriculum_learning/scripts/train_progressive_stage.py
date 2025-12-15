@@ -33,77 +33,30 @@ class StageDataset(Dataset):
     def __init__(self, data_path: str, image_dir: str, stage_num: int, processor, split: str = 'train'):
         """
         Args:
-            data_path: Path to JSON data file
+            data_path: Path to PROPER PRE-SPLIT JSON file (e.g., train_stage1.json or test_stage1.json)
             image_dir: Directory containing images
-            stage_num: Which stage to extract (1, 2, or 3)
+            stage_num: Which stage (1, 2, or 3) - used for logging only
             processor: Qwen2VL processor
-            split: 'train' or 'val'
+            split: 'train' or 'val' - used for logging only
         """
         self.image_dir = image_dir
         self.stage_num = stage_num
         self.processor = processor
         self.split = split
         
-        # Load data
+        # Load PROPER PRE-SPLIT data (already split by image ID with zero overlap!)
         with open(data_path, 'r') as f:
-            all_data = json.load(f)
+            self.samples = json.load(f)
         
-        # Extract QA pairs for this stage
-        self.samples = []
-        for item in all_data:
-            image_path = item.get('image_path', item.get('image', ''))
-            
-            # Handle image path
+        # Update image paths to be absolute
+        for sample in self.samples:
+            image_path = sample['image_path']
             if not os.path.isabs(image_path):
                 if image_path.startswith('images/'):
                     image_path = image_path[7:]
-                image_path = os.path.join(image_dir, image_path)
-            
-            # Extract stage QA
-            qa_pairs = self._extract_stage_qa(item, stage_num)
-            
-            for qa in qa_pairs:
-                self.samples.append({
-                    'image_path': image_path,
-                    'question': qa['question'],
-                    'answer': qa['answer'],
-                    'image_id': item.get('image_id', '')
-                })
+                sample['image_path'] = os.path.join(image_dir, image_path)
         
-        # Split into train/val (90/10)
-        np.random.seed(42)
-        indices = np.random.permutation(len(self.samples))
-        split_idx = int(0.9 * len(self.samples))
-        
-        if split == 'train':
-            self.samples = [self.samples[i] for i in indices[:split_idx]]
-        else:
-            self.samples = [self.samples[i] for i in indices[split_idx:]]
-        
-        print(f"  {split.capitalize()}: {len(self.samples)} samples")
-    
-    def _extract_stage_qa(self, sample: Dict, stage_num: int) -> List[Dict]:
-        """Extract QA pairs for a specific stage."""
-        stages_data = sample.get('stages', sample.get('clinical_flow_stages', {}))
-        
-        possible_keys = [
-            f'stage_{stage_num}',
-            f'Stage-{stage_num}',
-            f'Stage {stage_num}',
-            f'Stage-{stage_num}: Initial Assessment',
-            f'Stage-{stage_num}: Findings Identification',
-            f'Stage-{stage_num}: Clinical Context'
-        ]
-        
-        for key in possible_keys:
-            if key in stages_data:
-                return stages_data[key]
-        
-        for key in possible_keys:
-            if key in sample:
-                return sample[key]
-        
-        return []
+        print(f"  {split.capitalize()}: {len(self.samples)} samples (from proper image-based split)")
     
     def __len__(self):
         return len(self.samples)
@@ -161,7 +114,8 @@ def collate_fn(batch, processor):
 
 def train_stage(
     stage_num: int,
-    data_path: str,
+    train_data_path: str,
+    val_data_path: str,
     image_dir: str,
     output_dir: str,
     prev_checkpoint: Optional[str] = None,
@@ -172,11 +126,12 @@ def train_stage(
     device: str = "cuda"
 ):
     """
-    Train a single stage.
+    Train a single stage with PROPER IMAGE-BASED SPLIT.
     
     Args:
         stage_num: Stage number (1, 2, or 3)
-        data_path: Path to data JSON
+        train_data_path: Path to train split JSON (pre-split by image ID)
+        val_data_path: Path to validation/test split JSON (pre-split by image ID)
         image_dir: Directory with images
         output_dir: Where to save checkpoint
         prev_checkpoint: Previous stage checkpoint (None for Stage 1)
@@ -187,7 +142,7 @@ def train_stage(
         device: Device to use
     """
     print(f"\n{'='*60}")
-    print(f"TRAINING STAGE {stage_num}")
+    print(f"TRAINING STAGE {stage_num} (PROPER IMAGE-BASED SPLIT)")
     print(f"{'='*60}\n")
     
     # Load processor
@@ -197,10 +152,10 @@ def train_stage(
         trust_remote_code=True
     )
     
-    # Create datasets
-    print(f"\nCreating Stage {stage_num} datasets...")
-    train_dataset = StageDataset(data_path, image_dir, stage_num, processor, split='train')
-    val_dataset = StageDataset(data_path, image_dir, stage_num, processor, split='val')
+    # Create datasets from PROPER PRE-SPLIT files
+    print(f"\nCreating Stage {stage_num} datasets from proper split...")
+    train_dataset = StageDataset(train_data_path, image_dir, stage_num, processor, split='train')
+    val_dataset = StageDataset(val_data_path, image_dir, stage_num, processor, split='val')
     
     if len(train_dataset) == 0:
         print(f"ERROR: No training samples for Stage {stage_num}!")
@@ -370,10 +325,11 @@ def train_stage(
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Progressive Stage Training')
+    parser = argparse.ArgumentParser(description='Progressive Stage Training (PROPER IMAGE-BASED SPLIT)')
     parser.add_argument('--stage', type=int, required=True, choices=[1, 2, 3],
                        help='Stage number to train (1, 2, or 3)')
-    parser.add_argument('--data_path', required=True, help='Path to data JSON')
+    parser.add_argument('--train_data_path', required=True, help='Path to train split JSON (pre-split by image ID)')
+    parser.add_argument('--val_data_path', required=True, help='Path to validation/test split JSON (pre-split by image ID)')
     parser.add_argument('--image_dir', required=True, help='Directory with images')
     parser.add_argument('--output_dir', required=True, help='Output directory for checkpoints')
     parser.add_argument('--prev_checkpoint', help='Previous stage checkpoint (for Stage 2 and 3)')
@@ -386,15 +342,19 @@ def main():
     
     args = parser.parse_args()
     
-    # Validate prev_checkpoint requirement
-    if args.stage > 1 and not args.prev_checkpoint:
-        print(f"ERROR: Stage {args.stage} requires --prev_checkpoint from Stage {args.stage - 1}")
-        sys.exit(1)
+    # INFO: prev_checkpoint is now OPTIONAL
+    # - For CURRICULUM LEARNING: pass prev_checkpoint to continue from previous stage
+    # - For CXRTREK SEQUENTIAL: omit prev_checkpoint to train independently from base model
+    if args.prev_checkpoint:
+        print(f"INFO: Stage {args.stage} will continue from checkpoint: {args.prev_checkpoint}")
+    else:
+        print(f"INFO: Stage {args.stage} will train independently from base model (Qwen2-VL-2B-Instruct)")
     
     # Train stage
     train_stage(
         stage_num=args.stage,
-        data_path=args.data_path,
+        train_data_path=args.train_data_path,
+        val_data_path=args.val_data_path,
         image_dir=args.image_dir,
         output_dir=args.output_dir,
         prev_checkpoint=args.prev_checkpoint,

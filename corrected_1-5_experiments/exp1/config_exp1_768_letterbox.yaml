@@ -1,0 +1,58 @@
+# Experiment 1: 768x768 Letterbox Configuration
+# Uses aspect-ratio preserving resize + padding (no warping)
+# Expected training time: ~24-26 hours on single GPU
+
+model_name: Qwen/Qwen2-VL-7B-Instruct
+
+vision_frozen: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+train:
+  seed: 42
+  max_seq_len: 1800       # Increased for 768x768 (was 512 for 448x448)
+  train_bs: 4             # Can handle with 768x768
+  grad_accum: 16          # Effective batch size = 4 * 16 = 64
+  eval_bs: 4
+  lr: 1.0e-4
+  weight_decay: 0.0
+  epochs: 1
+  warmup_ratio: 0.05
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_steps: 500
+
+data:
+  train_jsonl: datasets/kvasir_raw_6500_image_level_70_15_15/train.jsonl
+  val_jsonl: datasets/kvasir_raw_6500_image_level_70_15_15/val.jsonl
+  image_root: /l/users/muhra.almahri/Surgical_COT/datasets/Kvasir-VQA/raw/images
+  
+  # Letterbox settings (aspect-ratio preserving)
+  use_letterbox: true
+  target_size: 768         # 768x768 resolution
+
+eval:
+  numeric_rel_tol: 0.05
+  numeric_abs_tol: 0.0
+
+# ============================================================================
+# PERFORMANCE EXPECTATIONS (based on resolution testing)
+# ============================================================================
+# Resolution: 768×768 (letterbox, no warping)
+# Training time: ~24-26 hours on single GPU
+# Speed: ~12.5 seconds per step
+# Speedup vs full resolution: ~1.9x faster
+# Expected accuracy: ~2-3% better than 448×448
+# Memory: Moderate (fits comfortably with batch_size=4)
+# ============================================================================
+
+
+
+
+
+
