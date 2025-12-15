@@ -1,0 +1,50 @@
+{
+  "qwen3vl_kvasir": {
+    "zeroshot": 53.48,
+    "zeroshot_correct": 4805,
+    "zeroshot_total": 8984,
+    "finetuned": 92.79,
+    "finetuned_correct": 8336,
+    "finetuned_total": 8984
+  },
+  "qwen3vl_endovis": {
+    "zeroshot": 31.12,
+    "zeroshot_correct": 742,
+    "zeroshot_total": 2384,
+    "finetuned": 95.18,
+    "finetuned_correct": 2269,
+    "finetuned_total": 2384
+  },
+  "medgemma_kvasir": {
+    "zeroshot": 32.05,
+    "zeroshot_correct": 2879,
+    "zeroshot_total": 8984,
+    "finetuned": 91.9,
+    "finetuned_correct": 8256,
+    "finetuned_total": 8984
+  },
+  "medgemma_endovis": {
+    "zeroshot": 25.08,
+    "zeroshot_correct": 598,
+    "zeroshot_total": 2384,
+    "finetuned": 99.83,
+    "finetuned_correct": 2380,
+    "finetuned_total": 2384
+  },
+  "llava_med_kvasir": {
+    "zeroshot": null,
+    "zeroshot_correct": null,
+    "zeroshot_total": null,
+    "finetuned": null,
+    "finetuned_correct": null,
+    "finetuned_total": null
+  },
+  "llava_med_endovis": {
+    "zeroshot": null,
+    "zeroshot_correct": null,
+    "zeroshot_total": null,
+    "finetuned": null,
+    "finetuned_correct": null,
+    "finetuned_total": null
+  }
+}

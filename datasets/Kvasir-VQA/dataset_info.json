@@ -1,0 +1,30 @@
+{
+  "name": "Kvasir-VQA",
+  "source": "https://huggingface.co/datasets/SimulaMet-HOST/Kvasir-VQA",
+  "description": "Endoscopic VQA dataset with GI images and QA pairs",
+  "splits": {
+    "raw": 58849
+  },
+  "total_samples": 58849,
+  "data_format": "endoscopic_images",
+  "annotation_types": ["vqa_pairs", "image_annotations"],
+  "processing_method": "efficient_image_handling",
+  "batch_size": 500,
+  "structure": {
+    "raw": {
+      "images_directory": "raw/images",
+      "metadata_directory": "raw/metadata",
+      "total_batches": 118,
+      "complete_metadata": "raw/metadata/raw_complete_metadata.json"
+    }
+  },
+  "features": {
+    "image": "PIL Image (endoscopic images)",
+    "source": "string (medical condition/source)",
+    "question": "string (VQA question)",
+    "answer": "string (VQA answer)",
+    "img_id": "string (unique image identifier)"
+  },
+  "download_date": "2025-01-31",
+  "status": "successfully_downloaded"
+} 

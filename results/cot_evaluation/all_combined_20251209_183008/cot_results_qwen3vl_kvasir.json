@@ -1,0 +1,16 @@
+{
+  "qwen3vl_kvasir": {
+    "zeroshot": 53.48,
+    "zeroshot_correct": 4805,
+    "zeroshot_total": 8984,
+    "finetuned": 92.79,
+    "finetuned_correct": 8336,
+    "finetuned_total": 8984,
+    "cot_zeroshot": 0.0,
+    "cot_zeroshot_correct": 0,
+    "cot_zeroshot_total": 0,
+    "cot_finetuned": 0.0,
+    "cot_finetuned_correct": 0,
+    "cot_finetuned_total": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "raw_split",
+  "total_samples": 58849,
+  "batches": 118,
+  "batch_size": 500,
+  "images_directory": "raw/images",
+  "metadata_directory": "raw/metadata",
+  "sample_keys": [
+    "img_id",
+    "source",
+    "question",
+    "answer",
+    "image_filename",
+    "image_path"
+  ]
+}

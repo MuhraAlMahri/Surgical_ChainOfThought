@@ -1,0 +1,23 @@
+{
+  "name": "Kvasir-VQA",
+  "data_type": "image",
+  "task": "gi_endoscopy_vqa",
+  "size_estimate": "~1GB",
+  "integration_date": "2025-08-26T17:08:10.059392",
+  "source_path": "/Users/mhra/Desktop/datasets/Kvasir-VQA",
+  "target_path": "surgical-video-benchmark/data/datasets/Kvasir-VQA",
+  "status": "ready",
+  "metadata": {
+    "description": "GI endoscopy and surgery visual question answering dataset",
+    "paper_url": "https://arxiv.org/pdf/2409.01437",
+    "download_url": "https://datasets.simula.no/kvasir-vqa",
+    "surgical_procedure": "gi_endoscopy",
+    "annotation_types": [
+      "vqa_pairs",
+      "image_annotations"
+    ],
+    "data_format": "endoscopic_images",
+    "num_cases": "large_scale",
+    "license": "Academic"
+  }
+}

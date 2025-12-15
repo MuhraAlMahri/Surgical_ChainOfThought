@@ -1,0 +1,44 @@
+{
+  "overall_accuracy": 0.0,
+  "correct": 0,
+  "total": 8984,
+  "category_accuracies": {
+    "abnormality_detection": 0.0,
+    "characteristics": 0.0,
+    "treatment": 0.0
+  },
+  "category_correct": {
+    "abnormality_detection": 0,
+    "characteristics": 0,
+    "treatment": 0
+  },
+  "category_total": {
+    "abnormality_detection": 3275,
+    "characteristics": 5703,
+    "treatment": 6
+  },
+  "predictions": [
+    "\u0e2a\u0e31\u0e07",
+    "\u0e2a\u0e31\u0e07",
+    "idx",
+    "\u0e40\u0e21",
+    ".q",
+    "\u05dc\u05db\u05d0\u05d5\u05e8\u05d4",
+    "\u05dc\u05db\u05d0\u05d5\u05e8\u05d4",
+    ".q",
+    ".q",
+    ".q"
+  ],
+  "answers": [
+    "no",
+    "yes",
+    "yes",
+    "1",
+    "polyp",
+    "yes",
+    "colonoscopy",
+    "11-20mm",
+    "paris is",
+    "pink"
+  ]
+}

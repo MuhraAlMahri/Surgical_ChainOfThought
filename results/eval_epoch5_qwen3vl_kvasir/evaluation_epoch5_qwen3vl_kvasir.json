@@ -1,0 +1,22 @@
+{
+  "overall_accuracy": 0.0,
+  "correct": 0,
+  "total": 0,
+  "category_accuracies": {
+    "abnormality_detection": 0.0,
+    "characteristics": 0.0,
+    "treatment": 0.0
+  },
+  "category_correct": {
+    "abnormality_detection": 0,
+    "characteristics": 0,
+    "treatment": 0
+  },
+  "category_total": {
+    "abnormality_detection": 0,
+    "characteristics": 0,
+    "treatment": 0
+  },
+  "predictions": [],
+  "answers": []
+}

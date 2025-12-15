@@ -114,27 +114,41 @@ corrected 1-5 experiments/logs/*.out
 corrected 1-5 experiments/logs/*.err
 
 # Large directories - exclude from git
-datasets/
 checkpoints/
-results/
 .hf_cache/
 huggingface/hub/
 training/
 runs/
 EndoVis2018/
 
-# Exclude large result JSON files but keep small configs
-results/**/*.json
+# Results - exclude large files but allow specific Qwen3-VL-8B Kvasir results
+results/
 !results/README.md
 !results/*.md
+!results/baseline_results.json
+!results/eval_epoch3_qwen3vl_kvasir/
+!results/eval_epoch3_qwen3vl_kvasir/**/*.json
+!results/eval_epoch5_qwen3vl_kvasir/
+!results/eval_epoch5_qwen3vl_kvasir/**/*.json
+!results/eval_epoch5_qwen3vl_kvasir_FIXED/
+!results/eval_epoch5_qwen3vl_kvasir_FIXED/**/*.json
+!results/qwen3vl_kvasir_zeroshot_cot_eval.json
+!results/cot_evaluation/
+!results/cot_evaluation/**/cot_results_qwen3vl_kvasir.json
 
-# Exclude large dataset files
-datasets/**/*.json
-datasets/**/*.jpg
-datasets/**/*.png
-datasets/**/*.jpeg
+# Datasets - exclude images but allow metadata files
+datasets/
 !datasets/README.md
 !datasets/*.md
+!datasets/Kvasir-VQA/
+datasets/Kvasir-VQA/raw/images/
+!datasets/Kvasir-VQA/dataset_info.json
+!datasets/Kvasir-VQA/dataset_metadata.json
+!datasets/Kvasir-VQA/raw/raw_info.json
+!datasets/kvasir_baseline_proper_80_20/
+!datasets/kvasir_baseline_proper_80_20/*.json
+!datasets/kvasir_reordered_proper_80_20/
+!datasets/kvasir_reordered_proper_80_20/*.json
 
 
 
