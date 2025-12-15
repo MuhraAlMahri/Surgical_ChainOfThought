@@ -121,7 +121,7 @@ training/
 runs/
 EndoVis2018/
 
-# Results - exclude large files but allow specific Qwen3-VL-8B Kvasir results
+# Results - exclude large files but allow specific result JSON files
 results/
 !results/README.md
 !results/*.md
@@ -135,6 +135,12 @@ results/
 !results/qwen3vl_kvasir_zeroshot_cot_eval.json
 !results/cot_evaluation/
 !results/cot_evaluation/**/cot_results_qwen3vl_kvasir.json
+!results/test_qwen3vl_kvasir_100samples.json
+# Allow LLaVA-Med and other model results
+!corrected_1-5_experiments/qlora_experiments/results/
+corrected_1-5_experiments/qlora_experiments/results/**/*.pt
+corrected_1-5_experiments/qlora_experiments/results/**/*.bin
+!corrected_1-5_experiments/qlora_experiments/results/**/*.json
 
 # Datasets - exclude images but allow metadata files
 datasets/
@@ -149,6 +155,15 @@ datasets/Kvasir-VQA/raw/images/
 !datasets/kvasir_baseline_proper_80_20/*.json
 !datasets/kvasir_reordered_proper_80_20/
 !datasets/kvasir_reordered_proper_80_20/*.json
+# Allow EndoVis dataset metadata
+!datasets/EndoVis2018/
+datasets/EndoVis2018/raw/images/
+!datasets/EndoVis2018/dataset_info.json
+!datasets/EndoVis2018/raw/metadata/
+!datasets/EndoVis2018/raw/metadata/*.json
+!datasets/EndoVis2018/*.md
+!datasets/EndoVis-18-VQLA/
+!datasets/EndoVis-18-VQLA/*.json
 
 
 

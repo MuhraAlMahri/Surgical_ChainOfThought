@@ -1,0 +1,30 @@
+{
+  "name": "EndoVis2018",
+  "source": "https://github.com/mli0603/EndoVis2018",
+  "description": "MICCAI EndoVis 2018 surgical scene segmentation dataset",
+  "data_format": "surgical_images",
+  "annotation_types": [
+    "segmentation_masks",
+    "vqa_pairs"
+  ],
+  "total_images": 3234,
+  "splits": {
+    "train": 1341,
+    "validation": 298,
+    "test": 596
+  },
+  "structure": {
+    "images_directory": "raw/images",
+    "metadata_directory": "raw/metadata",
+    "source_structure": "sequence_based"
+  },
+  "features": {
+    "image": "PIL Image (surgical scene images)",
+    "sequence": "string (sequence identifier)",
+    "frame": "string (frame number)",
+    "segmentation_labels": "available for some sequences",
+    "stereo": "left and right frames available"
+  },
+  "classes": 12,
+  "status": "organized"
+}
